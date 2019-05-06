@@ -1,0 +1,1 @@
+This is a very small sample of text. It is not likley that a very good model will be created from this text, because it is so short. In fact, it is a pretty bad model. However, it has features like commas and other punctuation ($20.00) and 40% less than it.

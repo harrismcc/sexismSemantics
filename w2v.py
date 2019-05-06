@@ -3,7 +3,7 @@
 # importing all necessary modules 
 from nltk.tokenize import sent_tokenize, word_tokenize 
 import warnings 
-  
+import sys
 warnings.filterwarnings(action = 'ignore') 
   
 import gensim 
@@ -11,8 +11,17 @@ from gensim.models import Word2Vec
   
 
 def main():
-    #  Reads ‘alice.txt’ file 
-    sample = open("googleMemo.txt", "r", encoding="utf8") 
+    '''This takes a sample file and creates a Word2Vec model that gets
+    saved into a .bin file for later use'''
+    
+    FILENAME = sys.argv[1]
+    MODELTYPE = 0 #1 for Skip Gram, 0 for CBOW
+    OUT_FILE_NAME = sys.argv[2] #should be a .bin file
+    SIZE = 100 #size of model
+    WINDOW = 5 #window for model
+
+
+    sample = open(FILENAME, "r", encoding="utf8") 
     s = sample.read() 
     testList = ["in", "this", "the", "it", "a", "and", "as", "have"]
     
@@ -32,77 +41,14 @@ def main():
     
         data.append(temp) 
 
-    # Rome is to Italy as China is to what?
-    #then the equation Rome -Italy + China would return Beijing. No kidding.
 
-
-    # Create CBOW model 
-    model1 = gensim.models.Word2Vec(data, min_count = 1,  
-                                size = 100, window = 5) 
-
-    #model1.save("123.model")
-    #gensim.models.KeyedVectors.load_word2vec_format("123.model")
-
-
+    # Create model
+    model1 = gensim.models.Word2Vec(data, min_count = 1, size = SIZE, window = WINDOW, sg=MODELTYPE) 
     
-    # Create Skip Gram model 
-    model2 = gensim.models.Word2Vec(data, min_count = 1, size = 100, 
-                                                window = 5, sg = 1) 
-    #model2.similarity('war', 'good'))
+    #Save model
+    model1.wv.save_word2vec_format(OUT_FILE_NAME, binary=True)
 
-    print("Positive Words:")
-
-    print("Women: ")
-    print(compareWord(model1, "women", parse("positiveWords.txt")))
-    print("Men:")
-    print(compareWord(model1, "men", parse("positiveWords.txt")))
-    print("Diversity:")
-    print(compareWord(model1, "diversity", parse("positiveWords.txt")))
-
-
-    print("Negative Words")
-
-    print("Women: ")
-    print(compareWord(model1, "women", parse("negativeWords.txt")))
-    print("Men:")
-    print(compareWord(model1, "men", parse("negativeWords.txt")))
-    print("Diversity:")
-    print(compareWord(model1, "diversity", parse("negativeWords.txt")))
-
-
-
-
-def compareWord(model, startWord, wordList):
-
-    all = []
-
-    count = 0
-    for word in wordList:
-        if word in model:
-            count += 1
-            all.append(model.similarity(startWord, word))
-
-    return (sum(all)/len(all))
-
-
-def compareLists(model, l1, l2):
-    l = []
-    for word in l1:
-        if word in model:
-            l.append(compareWord(model, word, l2))
-
-    return (sum(l)/len(l))
-
-
-def parse(fname):
-    f = open(fname, "r", encoding="utf8")
-    l = []
-    for line in f:
-        for word in line.split():
-           l.append(word.lower())
-
-    return l     
-
+  
 
 main()
 
