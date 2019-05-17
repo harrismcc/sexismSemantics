@@ -1,11 +1,13 @@
-# Python program to generate word vectors using Word2Vec 
+# Harris McCullers 2019, all rights reserved
   
 # importing all necessary modules 
 from nltk.tokenize import sent_tokenize, word_tokenize 
 import warnings 
 import sys
 warnings.filterwarnings(action = 'ignore') 
-  
+
+import cython
+
 import gensim 
 from gensim.models import Word2Vec 
   
@@ -15,15 +17,17 @@ def main():
     saved into a .bin file for later use'''
     
     FILENAME = sys.argv[1]
-    MODELTYPE = 0 #1 for Skip Gram, 0 for CBOW
+    MODELTYPE = 1 #1 for Skip Gram, 0 for CBOW
     OUT_FILE_NAME = sys.argv[2] #should be a .bin file
     SIZE = 100 #size of model
     WINDOW = 5 #window for model
-
+    print("Running on: " + str(sys.argv[1]))
+    print("Output to: " + str(sys.argv[2]))
+    print("Run this on a machine with GCC for faster results")
 
     sample = open(FILENAME, "r", encoding="utf8") 
     s = sample.read() 
-    testList = ["in", "this", "the", "it", "a", "and", "as", "have"]
+    testList = ["in", "this", "the", "it", "a", "and", "as", "have", ",", ".", ";", "-"]
     
     # Replaces escape character with space 
     f = s.replace("\n", " ") 
